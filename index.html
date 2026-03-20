@@ -293,9 +293,9 @@
     </div>
 
     <script>
-        // Configuration Variables (Update these URLs)
-        const newDomain = "vipstudy.site";
-        const whatsappLink = "https://whatsapp.com/channel/0029VbAvDSX0QeahEg4kkE3U"; // Replace with actual WhatsApp link
+        // Maine sirf yahan URL mein https:// joda hai! 
+        const newDomain = "https://vipstudy.site"; 
+        const whatsappLink = "https://whatsapp.com/channel/0029VbAvDSX0QeahEg4kkE3U"; 
 
         // Elements
         const goNowBtn = document.getElementById('goNowBtn');
@@ -313,32 +313,30 @@
             window.open(whatsappLink, '_blank');
         };
 
-        // 1. Auto-redirect after 4 seconds
+        // 1. Auto-redirect after 8 seconds
         let redirectTimer = setTimeout(executeRedirect, 8000);
 
         // 2. "Go Now" button instant redirect
         goNowBtn.addEventListener('click', () => {
-            clearTimeout(redirectTimer); // Prevent double firing
+            clearTimeout(redirectTimer); 
             executeRedirect();
         });
 
         // 3. Show Premium Modal after 2 seconds
         setTimeout(() => {
             waModal.classList.add('active');
-            clearTimeout(redirectTimer); // Pause redirect while modal is open, optional but better for UX
+            clearTimeout(redirectTimer); 
         }, 2000);
 
         // 4. Modal Interactions
         closeModalBtn.addEventListener('click', () => {
             waModal.classList.remove('active');
-            // Resume the redirect timer if they close the modal
             redirectTimer = setTimeout(executeRedirect, 3000); 
         });
 
         joinWaBtn.addEventListener('click', () => {
             openWhatsApp();
             waModal.classList.remove('active');
-            // Resume redirect after interacting with WhatsApp
             redirectTimer = setTimeout(executeRedirect, 2000);
         });
 
