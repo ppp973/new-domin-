@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Expired - Redirecting</title>
+    <style>
+        /* Base Variables & Reset */
+        :root {
+            --neon-blue: #3b82f6;
+            --neon-purple: #8b5cf6;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+            /* Animated Gradient Background */
+            background: linear-gradient(-45deg, #020617, #1e1b4b, #0f172a, #312e81);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        /* Animations */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; pointer-events: none; }
+        }
+
+        /* Glassmorphism Styles */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(139, 92, 246, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Glowing Border Effect (pseudo-element) */
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+            opacity: 0.5;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* Spinner & Status */
+        .spinner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--neon-blue);
+            border-right-color: var(--neon-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .redirect-text {
+            font-size: 0.9rem;
+            color: var(--neon-blue);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            width: 100%;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Modal Popup */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: rgba(20, 20, 35, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            width: 85%;
+            max-width: 350px;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(37, 211, 102, 0.1);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-whatsapp:hover {
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover { color: white; }
+
+        /* Floating WhatsApp Button */
+        .floating-wa {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 900;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+            animation: pulseGlow 2s infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .floating-wa:hover {
+            transform: scale(1.1);
+        }
+
+        .floating-wa svg {
+            width: 35px;
+            height: 35px;
+            fill: white;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            .glass-panel { padding: 30px 20px; }
+            h1 { font-size: 1.5rem; }
+            .floating-wa { bottom: 20px; right: 20px; width: 50px; height: 50px; }
+            .floating-wa svg { width: 28px; height: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glass-panel">
+        <h1>This domain is expired</h1>
+        <p>Visit us on our new domain to continue accessing our services.</p>
+        
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <span class="redirect-text">Redirecting to your new domain...</span>
+        </div>
+
+        <button class="btn" id="goNowBtn">Go Now</button>
+    </div>
+
+    <div class="modal-overlay" id="waModal">
+        <div class="modal-card">
+            <button class="close-modal" id="closeModalBtn">&times;</button>
+            <h2>Join WhatsApp Channel</h2>
+            <p style="font-size: 0.9rem; margin-bottom: 20px;">Stay updated with our latest news and announcements.</p>
+            <button class="btn btn-whatsapp" id="joinWaBtn">Join Now</button>
+        </div>
+    </div>
+
+    <div class="floating-wa" id="floatingWaBtn">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+        </svg>
+    </div>
+
+    <script>
+        // Configuration Variables (Update these URLs)
+        const newDomain = "vipstudy.site";
+        const whatsappLink = "https://whatsapp.com/channel/0029VbAvDSX0QeahEg4kkE3U"; // Replace with actual WhatsApp link
+
+        // Elements
+        const goNowBtn = document.getElementById('goNowBtn');
+        const waModal = document.getElementById('waModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const joinWaBtn = document.getElementById('joinWaBtn');
+        const floatingWaBtn = document.getElementById('floatingWaBtn');
+
+        // Redirect Functions
+        const executeRedirect = () => {
+            window.location.href = newDomain;
+        };
+
+        const openWhatsApp = () => {
+            window.open(whatsappLink, '_blank');
+        };
+
+        // 1. Auto-redirect after 4 seconds
+        let redirectTimer = setTimeout(executeRedirect, 8000);
+
+        // 2. "Go Now" button instant redirect
+        goNowBtn.addEventListener('click', () => {
+            clearTimeout(redirectTimer); // Prevent double firing
+            executeRedirect();
+        });
+
+        // 3. Show Premium Modal after 2 seconds
+        setTimeout(() => {
+            waModal.classList.add('active');
+            clearTimeout(redirectTimer); // Pause redirect while modal is open, optional but better for UX
+        }, 2000);
+
+        // 4. Modal Interactions
+        closeModalBtn.addEventListener('click', () => {
+            waModal.classList.remove('active');
+            // Resume the redirect timer if they close the modal
+            redirectTimer = setTimeout(executeRedirect, 3000); 
+        });
+
+        joinWaBtn.addEventListener('click', () => {
+            openWhatsApp();
+            waModal.classList.remove('active');
+            // Resume redirect after interacting with WhatsApp
+            redirectTimer = setTimeout(executeRedirect, 2000);
+        });
+
+        // 5. Floating WhatsApp Button Interaction
+        floatingWaBtn.addEventListener('click', openWhatsApp);
+    </script>
+</body>
+</html>
